@@ -8,14 +8,13 @@ def _get_location() -> dict:
         ip = GetIpInterface.get_ip()
     except ValueError:
         return {}
-    headers = {
-        "X-RapidAPI-Key": API_KEY_IP,
-        "X-RapidAPI-Host": API_HOST_IP
-    }
+
     params = {
-        "ip-or-hostname": ip
+        "ip": ip,
+        "format": "json",
+        "key": API_KEY_IP
     }
-    response = requests.get("https://{host}/json/{ip}".format(host=API_HOST_IP, ip=ip), headers=headers, params=params)
+    response = requests.get("https://{host}/".format(host=API_HOST_IP), params=params)
     if response.status_code == 200:
         return response.json()
     else:
@@ -33,4 +32,5 @@ class GetLocationInterface:
 if __name__ == '__main__':
     _get_location()
     GetLocationInterface()
+    print(GetLocationInterface().get_location())
 
