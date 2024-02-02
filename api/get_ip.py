@@ -21,3 +21,4 @@ class GetIpInterface:
 if __name__ == '__main__':
     _get_ip()
     GetIpInterface()
+    print(GetIpInterface().get_ip())
