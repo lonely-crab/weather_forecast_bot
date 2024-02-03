@@ -1,6 +1,6 @@
 import requests
 from config import API_KEY_IP, API_HOST_IP
-from get_ip import GetIpInterface
+from .get_ip import GetIpInterface
 
 
 def _get_location() -> dict:
@@ -27,6 +27,9 @@ class GetLocationInterface:
         if not _get_location():
             raise ValueError("Couldn't get location from API.")
         return _get_location()
+
+    def get_timezone(self):
+        return self.get_location()['time_zone']
 
 
 if __name__ == '__main__':
