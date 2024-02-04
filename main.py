@@ -1,7 +1,10 @@
-from bot.bot import start_bot
-from database.database_orm import create_models
+from loader import bot
+import handlers  # noqa
+from utils.set_bot_commands import set_default_commands
+from telebot import custom_filters
 
-if __name__ == '__main__':
-    create_models()
-    start_bot()
 
+if __name__ == "__main__":
+    set_default_commands(bot)
+    bot.add_custom_filter(custom_filters.StateFilter(bot))
+    bot.infinity_polling()
