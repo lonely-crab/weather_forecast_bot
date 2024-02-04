@@ -1,5 +1,5 @@
 import requests
-from config import API_KEY_IP, API_HOST_IP
+from config_data.config import API_KEY_IP, API_HOST_IP
 from .get_ip import GetIpInterface
 
 

@@ -1,5 +1,5 @@
 import requests
-from config import GET_IP_LINK
+from config_data.config import GET_IP_LINK
 
 
 def _get_ip() -> str:

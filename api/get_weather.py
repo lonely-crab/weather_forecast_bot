@@ -1,5 +1,5 @@
 import requests
-from config import API_HOST_WEATHER, API_KEY_WEATHER
+from config_data.config import API_HOST_WEATHER, API_KEY_WEATHER
 from .get_loc_from_ip import GetLocationInterface
 
 

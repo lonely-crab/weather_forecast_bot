@@ -1,7 +1,6 @@
 import telebot
-from telebot import custom_filters
 from telebot.handler_backends import State, StatesGroup #States
-from config import BOT_TOKEN
+from config_data.config import BOT_TOKEN
 
 # States storage
 from telebot.storage import StateMemoryStorage
