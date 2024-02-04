@@ -23,7 +23,7 @@ API_HOST_WEATHER = "tomorrow-io1.p.rapidapi.com"
 # поддерживаемые команды
 DEFAULT_COMMANDS = [
     ('start', 'Start bot'),
-    ('current_weather', 'Get current weather at your location'),
+    ('current_weather', 'Get hourly weather forecast at your location'),
     ('weather_forecast', 'Get weather forecast for the next 6 days at your location (including today)'),
     ('help', 'List of commands and their descriptions'),
     ('custom', 'Custom weather forecast (try \\custom for more information)'),
