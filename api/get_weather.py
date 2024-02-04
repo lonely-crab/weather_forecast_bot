@@ -1,13 +1,13 @@
 import requests
 from config_data.config import API_HOST_WEATHER, API_KEY_WEATHER
-from .get_loc_from_ip import GetLocationInterface
+from database.redis_database import RedisDatabaseInterface
 
 
 def _get_weather(timesteps: str = "1d", units: str = "metric") -> dict:
     try:
-        location = GetLocationInterface.get_location()
-    except ValueError:
-        return {}
+        location = RedisDatabaseInterface.get_redis("location")
+    except KeyError:
+        raise ValueError("Location isn't set. Use /set_location command.")
 
     headers = {
         "X-RapidAPI-Key": API_KEY_WEATHER,
@@ -22,6 +22,8 @@ def _get_weather(timesteps: str = "1d", units: str = "metric") -> dict:
                             headers=headers, params=params)
     if response.status_code == 200:
         return response.json()
+    elif response.status_code == 400:
+        raise ValueError("It seems that your location isn't correct. Use /set_location command.")
     else:
         return {}
     
@@ -29,9 +31,12 @@ def _get_weather(timesteps: str = "1d", units: str = "metric") -> dict:
 class GetWeatherInterface:
     @classmethod
     def get_weather(cls, timesteps: str = "1d", units: str = "metric") -> dict:
-        if not _get_weather(timesteps, units):
-            raise ValueError("Couldn't get weather from API.")
-        return _get_weather(timesteps, units)
+        try:
+            if not _get_weather(timesteps, units):
+                raise ValueError("Couldn't get weather from API.")
+            return _get_weather(timesteps, units)
+        except ValueError as error:
+            raise ValueError(str(error))
 
 
 if __name__ == '__main__':
