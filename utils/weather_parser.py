@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from datetime import timezone
-from api.get_loc_from_ip import GetLocationInterface
+from api.get_loc_from_coord import GetLocationInterface
 
 
 _weather_emojis = {
@@ -29,7 +29,7 @@ def _structured_weather_forecast(weather_forecast: dict) -> dict:
 
 def _print_weather_forecast_item(weather_forecast_item: tuple, location: dict | None = None) -> str:
     if location is None:
-        location = GetLocationInterface.get_location()['city_name']
+        location = GetLocationInterface.get_location()['city']
 
     weather_summary = (
         "Weather forecast for {} at {}:\n"
