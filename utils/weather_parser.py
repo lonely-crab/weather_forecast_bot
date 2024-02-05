@@ -27,9 +27,12 @@ def _structured_weather_forecast(weather_forecast: dict) -> dict:
     return weather_dict
 
 
-def _print_weather_forecast_item(weather_forecast_item: tuple, location: dict | None = None) -> str:
-    if location is None:
-        location = GetLocationInterface.get_location()['city']
+def _print_weather_forecast_item(weather_forecast_item: tuple, location: str | None = None) -> str:
+    try:
+        if location is None:
+            location = GetLocationInterface.get_location()['city']
+    except KeyError:
+        location = ''
 
     weather_summary = (
         "Weather forecast for {} at {}:\n"
