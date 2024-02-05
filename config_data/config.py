@@ -17,7 +17,7 @@ if not API_KEY_WEATHER:
     raise ValueError("API_KEY_WEATHER отсутствует в переменных окружения")
 
 API_HOST_WEATHER = "tomorrow-io1.p.rapidapi.com"
-
+API_HOST_LOCATION = "api.geoapify.com"
 
 # поддерживаемые команды
 DEFAULT_COMMANDS = [
