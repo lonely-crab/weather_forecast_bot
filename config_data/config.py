@@ -8,15 +8,14 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN отсутствует в переменных окружения")
 
-API_KEY_IP = os.getenv('API_KEY_IP')
-if not API_KEY_IP:
-    raise ValueError("API_KEY_IP отсутствует в переменных окружения")
+API_KEY_LOCATION = os.getenv('API_KEY_LOCATION')
+if not API_KEY_LOCATION:
+    raise ValueError("API_KEY_LOCATION отсутствует в переменных окружения")
 
 API_KEY_WEATHER = os.getenv('API_KEY_WEATHER')
 if not API_KEY_WEATHER:
     raise ValueError("API_KEY_WEATHER отсутствует в переменных окружения")
 
-API_HOST_IP = "api.ip2location.io"
 API_HOST_WEATHER = "tomorrow-io1.p.rapidapi.com"
 
 
@@ -30,5 +29,4 @@ DEFAULT_COMMANDS = [
     ('history', 'History of requests')
 ]
 
-GET_IP_LINK = "http://api.ipify.org/"
 
