@@ -3,9 +3,9 @@ from config_data.config import API_HOST_WEATHER, API_KEY_WEATHER
 from database.redis_database import RedisDatabaseInterface
 
 
-def _get_weather(timesteps: str = "1d", units: str = "metric") -> dict:
+def _get_weather(user_id, timesteps: str = "1d", units: str = "metric") -> dict:
     try:
-        location = RedisDatabaseInterface.get_redis("location")
+        location = RedisDatabaseInterface.get_redis(user_id, "location")
     except KeyError:
         raise ValueError("Location isn't set. Use /set_location command.")
 
@@ -30,16 +30,16 @@ def _get_weather(timesteps: str = "1d", units: str = "metric") -> dict:
     
 class GetWeatherInterface:
     @classmethod
-    def get_weather(cls, timesteps: str = "1d", units: str = "metric") -> dict:
+    def get_weather(cls,user_id, timesteps: str = "1d", units: str = "metric") -> dict:
         try:
-            if not _get_weather(timesteps, units):
+            if not _get_weather(user_id, timesteps, units):
                 raise ValueError("Couldn't get weather from API.")
-            return _get_weather(timesteps, units)
+            return _get_weather(user_id, timesteps, units)
         except ValueError as error:
             raise ValueError(str(error))
 
 
 if __name__ == '__main__':
-    _get_weather()
+    _get_weather("123")
     GetWeatherInterface()
-    print(_get_weather())
+    print(_get_weather("123"))
