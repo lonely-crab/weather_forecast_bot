@@ -27,10 +27,10 @@ def _structured_weather_forecast(weather_forecast: dict) -> dict:
     return weather_dict
 
 
-def _print_weather_forecast_item(weather_forecast_item: tuple, location: str | None = None) -> str:
+def _print_weather_forecast_item(user_id, weather_forecast_item: tuple, location: str | None = None) -> str:
     try:
         if location is None:
-            location = GetLocationInterface.get_location()['city']
+            location = GetLocationInterface.get_location(user_id)['city']
     except KeyError:
         location = ''
 
@@ -70,9 +70,9 @@ def _print_weather_forecast_item(weather_forecast_item: tuple, location: str | N
     return formatted_summary
 
 
-def _print_weather_forecast(weather_forecast: dict) -> str:
+def _print_weather_forecast(user_id, weather_forecast: dict) -> str:
     weather_list = list(weather_forecast.items())
-    weather_summary = [_print_weather_forecast_item(weather_list[0])]
+    weather_summary = [_print_weather_forecast_item(user_id, weather_list[0])]
     short_summary = ("\nWeather forecast for {}:\n    {emoji1}Maximum Temperature: {:.0f}°C\n"
                      "    {emoji2}Minimum Temperature: {:.0f}°C")
 
@@ -93,9 +93,9 @@ class WeatherParser:
         return _structured_weather_forecast(weather_forecast)
 
     @classmethod
-    def print_weather_forecast(cls, weather_forecast):
-        return _print_weather_forecast(weather_forecast)
+    def print_weather_forecast(cls, user_id, weather_forecast):
+        return _print_weather_forecast(user_id, weather_forecast)
 
     @classmethod
-    def print_weather_forecast_item(cls, weather_forecast_item, location=None):
-        return _print_weather_forecast_item(weather_forecast_item, location)
+    def print_weather_forecast_item(cls, user_id, weather_forecast_item, location=None):
+        return _print_weather_forecast_item(user_id, weather_forecast_item, location)
