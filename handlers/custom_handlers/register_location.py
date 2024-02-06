@@ -8,8 +8,8 @@ from states.states import MyStates
 def handle_location_1(message: Message) -> None:
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
-    RedisDatabaseInterface.set_redis("location", {"latitude": message.location.latitude,
-                                                  "longitude": message.location.longitude})
+    RedisDatabaseInterface.set_redis(message.from_user.id, "location", {"latitude": message.location.latitude,
+                                                                        "longitude": message.location.longitude})
     bot.set_state(message.from_user.id, MyStates.location, message.chat.id)
     bot.send_message(message.chat.id, "Location saved!")
 
@@ -19,6 +19,6 @@ def handle_location_1(message: Message) -> None:
 def handle_location_2(message: Message) -> None:
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
-    RedisDatabaseInterface.set_redis("location", message.text)
+    RedisDatabaseInterface.set_redis(message.from_user.id, "location", message.text)
     bot.set_state(message.from_user.id, MyStates.location, message.chat.id)
     bot.send_message(message.chat.id, "Location saved!")
