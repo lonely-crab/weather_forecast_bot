@@ -4,7 +4,7 @@ from config_data.config import API_KEY_LOCATION, API_HOST_LOCATION
 from database.redis_database import RedisDatabaseInterface
 
 
-def _get_location(latitude, longitude) -> dict:
+def _get_location(user_id, latitude, longitude) -> dict:
     url = "https://{host}/v1/geocode/reverse".format(host=API_HOST_LOCATION)
 
     headers = CaseInsensitiveDict()
@@ -24,9 +24,9 @@ def _get_location(latitude, longitude) -> dict:
 
 class GetLocationInterface:
     @classmethod
-    def get_location(cls) -> dict:
+    def get_location(cls, user_id) -> dict:
         try:
-            return _get_location(**RedisDatabaseInterface.get_redis("location"))
+            return _get_location(**RedisDatabaseInterface.get_redis(user_id, "location"))
         except ValueError as error:
             raise ValueError(str(error))
         except KeyError:
