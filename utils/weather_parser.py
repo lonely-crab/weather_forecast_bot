@@ -1,8 +1,7 @@
 import json
 from datetime import datetime
 from datetime import timezone
-from api.get_loc_from_coord import GetLocationInterface
-
+from database.redis_database import RedisDatabaseInterface
 
 _weather_emojis = {
         "temperatureMax": "\U0001F321",  # 🌡️
@@ -28,10 +27,11 @@ def _structured_weather_forecast(weather_forecast: dict) -> dict:
 
 
 def _print_weather_forecast_item(user_id, weather_forecast_item: tuple, location: str | None = None) -> str:
-    try:
-        if location is None:
-            location = GetLocationInterface.get_location(user_id)['city']
-    except KeyError:
+    if location is None:
+        location = RedisDatabaseInterface.get_redis(user_id, "city")
+    if location is None:
+        location = RedisDatabaseInterface.get_redis(user_id, "location")
+    if location is None:
         location = ''
 
     weather_summary = (
