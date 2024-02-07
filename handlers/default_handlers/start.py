@@ -2,7 +2,7 @@ from telebot.types import Message
 from loader import bot
 from database.database_orm import User
 from peewee import IntegrityError
-from states.states import MyStates
+from database.redis_database import RedisDatabaseInterface
 
 
 @bot.message_handler(commands=['start'])
@@ -12,6 +12,8 @@ def handle_start(message: Message) -> None:
     user_id = message.from_user.id
     username = message.from_user.username
     first_name = message.from_user.first_name
+
+    RedisDatabaseInterface.set_user(message.from_user.id)
 
     try:
         user = User.create(

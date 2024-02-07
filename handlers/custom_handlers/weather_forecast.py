@@ -14,9 +14,9 @@ def handle_weather_forecast(message: Message) -> None:
         bot.delete_state(message.from_user.id, message.chat.id)
 
     try:
-        weather = GetWeatherInterface.get_weather()
+        weather = GetWeatherInterface.get_weather(message.from_user.id)
         structured_weather = WeatherParser.structured_weather_forecast(weather)
-        bot.send_message(message.chat.id, WeatherParser.print_weather_forecast(structured_weather))
+        bot.send_message(message.chat.id, WeatherParser.print_weather_forecast(message.from_user.id, structured_weather))
         bot.send_message(message.chat.id, "For more information, write a date from"
                                           " the list above to see detailed forecast")
 
@@ -31,11 +31,11 @@ def handle_forecast(message: Message) -> None:
     forecast_date = message.text
     if re.match(r'\b\d{2}.\d{2}\b', forecast_date):
         try:
-            forecast_info = json.loads(RedisDatabaseInterface.get_redis(message.from_user.id, 'weather'))[message.text]
-            location = RedisDatabaseInterface.get_redis(message.from_user.id, 'location').decode('utf-8')
-            bot.send_message(message.chat.id, WeatherParser.print_weather_forecast_item((forecast_date,
-                                                                                         forecast_info)
-                                                                                        , location))
+            forecast_info = RedisDatabaseInterface.get_redis(message.from_user.id, 'weather')[message.text]
+            location = RedisDatabaseInterface.get_redis(message.from_user.id, 'city')
+            bot.send_message(message.chat.id,
+                             WeatherParser.print_weather_forecast_item(message.from_user.id,
+                                                    (forecast_date, forecast_info), location))
         except KeyError:
             bot.send_message(message.chat.id, "Write a date from the list above to see detailed forecast.\n"
                                               "If you want to see other weather forecast, try another command")

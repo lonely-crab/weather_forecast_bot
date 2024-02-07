@@ -2,6 +2,7 @@ from loader import bot
 from telebot.types import Message
 from database.redis_database import RedisDatabaseInterface
 from states.states import MyStates
+from api.get_loc_from_coord import GetLocationInterface
 
 
 @bot.message_handler(content_types=['location'], state=MyStates.set_location)
@@ -10,6 +11,8 @@ def handle_location_1(message: Message) -> None:
         bot.delete_state(message.from_user.id, message.chat.id)
     RedisDatabaseInterface.set_redis(message.from_user.id, "location", {"latitude": message.location.latitude,
                                                                         "longitude": message.location.longitude})
+    RedisDatabaseInterface.set_redis(message.from_user.id, "city",
+                                     GetLocationInterface.get_location(message.from_user.id)["city"])
     bot.set_state(message.from_user.id, MyStates.location, message.chat.id)
     bot.send_message(message.chat.id, "Location saved!")
 
