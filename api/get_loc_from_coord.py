@@ -17,7 +17,7 @@ def _get_location(user_id, latitude, longitude) -> dict:
 
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        return response.json()['features'][0]['properties']['datasource']
+        return response.json()['features'][0]['properties']
     else:
         raise ValueError("Couldn't get location from API.")
 
@@ -26,7 +26,7 @@ class GetLocationInterface:
     @classmethod
     def get_location(cls, user_id) -> dict:
         try:
-            return _get_location(**RedisDatabaseInterface.get_redis(user_id, "location"))
+            return _get_location(user_id, **RedisDatabaseInterface.get_redis(user_id, "location"))
         except ValueError as error:
             raise ValueError(str(error))
         except KeyError:
