@@ -11,8 +11,11 @@ def _get_weather(user_id, timesteps: str = "1d", units: str = "metric") -> dict:
         raise ValueError("Location isn't set. Use /set_location command.")
     try:
         location_query = ','.join([str(location['latitude']), str(location['longitude'])])
-    except TypeError:
-        location_query = location
+    except (KeyError, TypeError):
+        try:
+            location_query = ' '.join([location['country'], location['city']])
+        except (KeyError, TypeError):
+            location_query = location
     headers = {
         "X-RapidAPI-Key": API_KEY_WEATHER,
         "X-RapidAPI-Host": API_HOST_WEATHER
