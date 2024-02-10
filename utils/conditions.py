@@ -5,9 +5,9 @@ def _choose_emoji(current_weather: dict) -> dict:
     weather_conditions = {
         'cloudCover': [0.1, 50.0, 100.0],
         'windSpeed': [1.0, 10.0, 20.0],
-        'rainAccumulation': [0.0, 5.0, 20.0],
-        'sleetAccumulation': [0.0, 1.0, 5.0],
-        'snowAccumulation': [0.0, 5.0, 20.0],
+        'rainAccumulation': [0.0, 1.0, 2.0],
+        'sleetAccumulation': [0.0, 1.0, 2.0],
+        'snowAccumulation': [0.0, 1.0, 2.0],
     }
     weather_emojis = {
         'cloudCover': ['\u2600\uFE0F', '\U0001f325\uFE0F', '\u2601\uFE0F'],
