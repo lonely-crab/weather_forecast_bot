@@ -6,7 +6,7 @@ from database.redis_database import RedisDatabaseInterface
 def _get_weather(user_id, timesteps: str = "1d", units: str = "metric") -> dict:
     try:
         location = RedisDatabaseInterface.get_redis(user_id, "location")
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError("Location isn't set. Use /set_location command.")
 
     headers = {
