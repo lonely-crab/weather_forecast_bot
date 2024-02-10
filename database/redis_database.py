@@ -7,12 +7,11 @@ redis_db = redis.Redis(host='localhost', port=6379, db=0)
 
 
 def _set_redis(user_id: str, key: str, value: dict | str) -> None:
-    if redis_db.get(user_id) is not None:
-        old_value = json.loads(redis_db.get(user_id))
-        old_value.update(value)
-    else:
-        old_value = value
+    value = {key: value}
+    old_value = json.loads(redis_db.get(user_id))
+    old_value.update(value)
     new_value = json.dumps(old_value)
+    print(new_value)
     redis_db.set(user_id, new_value)
 
 
