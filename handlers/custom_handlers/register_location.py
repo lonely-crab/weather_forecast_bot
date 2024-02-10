@@ -24,5 +24,6 @@ def handle_location_2(message: Message) -> None:
         bot.delete_state(message.from_user.id, message.chat.id)
     country, city = message.text.split('\n')
     RedisDatabaseInterface.set_redis(message.from_user.id, "location", {"country": country, "city": city})
+    RedisDatabaseInterface.set_redis(message.from_user.id, "city", city)
     bot.set_state(message.from_user.id, MyStates.location, message.chat.id)
     bot.send_message(message.chat.id, "Location saved!")
