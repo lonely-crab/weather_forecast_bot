@@ -31,3 +31,10 @@ class GetLocationInterface:
             raise ValueError(str(error))
         except KeyError:
             raise ValueError("Location isn't set. Use /set_location command.")
+
+
+if __name__ == '__main__':
+    RedisDatabaseInterface.set_user(123)
+    RedisDatabaseInterface.set_redis(123, "location", {"latitude": 59.937500, "longitude": 30.308611})
+    # GetLocationInterface.get_location(123)
+    print(GetLocationInterface.get_location(123))

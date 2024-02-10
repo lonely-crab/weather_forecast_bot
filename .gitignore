@@ -1,3 +1,6 @@
 *.pdf
 .idea/
 database/__pycache__/redis_database.cpython-311.pyc
+**/__pycache__/*
+.env
+/handlers/__pycache__/*

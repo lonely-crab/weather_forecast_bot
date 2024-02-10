@@ -21,6 +21,7 @@ def handle_set_location(message: Message) -> None:
             bot.send_photo(message.chat.id, photo)
 
     bot.send_message(message.chat.id, "If you either can't or don't want to share your exact location,"
-                                      " write your city and country.")
+                                      " write: country\ncity.")
+    bot.send_message(message.chat.id, "For example:\nRussia\nSaint Petersburg")
 
     bot.set_state(message.from_user.id, MyStates.set_location, message.chat.id)

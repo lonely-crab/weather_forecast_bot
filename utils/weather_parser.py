@@ -1,7 +1,9 @@
 import json
+import re
 from datetime import datetime
 from datetime import timezone
 from database.redis_database import RedisDatabaseInterface
+from .conditions import Conditions
 
 _weather_emojis = {
         "temperatureMax": "\U0001F321",  # 🌡️
@@ -23,6 +25,20 @@ def _structured_weather_forecast(weather_forecast: dict) -> dict:
         formatted_date = datetime.fromisoformat(day['time']).strftime("%d.%m")
         weather_dict[formatted_date] = {key: day['values'][key] for key in keys}
 
+    return weather_dict
+
+
+def _structured_current_weather(current_weather: dict) -> dict:
+    keys = ['temperature', 'cloudCover', 'windSpeed', 'rainAccumulation', 'sleetAccumulation', 'snowAccumulation',
+            'precipitationProbability']
+    weather_dict = {}
+    for hour in current_weather['timelines']['hourly']:
+        time = datetime.fromisoformat(hour['time']).strftime("%H:%M")
+        if time in weather_dict:
+            continue
+        weather = {key: hour['values'][key] for key in keys}
+        print(weather)
+        weather_dict[time] = weather
     return weather_dict
 
 
@@ -87,6 +103,36 @@ def _print_weather_forecast(user_id, weather_forecast: dict) -> str:
     return '\n'.join(weather_summary)
 
 
+def _print_current_weather(user_id, current_weather: dict) -> str:
+    keys = ['temperature', 'cloudCover', 'windSpeed', 'rainAccumulation', 'sleetAccumulation', 'snowAccumulation',
+            'precipitationProbability']
+
+    location = RedisDatabaseInterface.get_redis(user_id, 'city')
+    if location is None:
+        location = RedisDatabaseInterface.get_redis(user_id, 'location')
+    if location is None:
+        location = ''
+
+    weather_item = (
+        "{time} {cloudCover} {temperature:.0f}°C -- {windEmoji}{windSpeed:.2f} m/s"
+        " -- {accumulation}{precipitation:.0f}%\n"
+    )
+    weather_summary = "Current weather at {}:\n".format(location)
+
+    for time in current_weather:
+        emojis = Conditions.choose_emoji(current_weather[time])
+        accumulation = [key for key in emojis if key.endswith('Accumulation')][0]
+        formatted_weather_item = weather_item.format(time=time,
+                                           temperature=current_weather[time]['temperature'],
+                                           cloudCover=emojis['cloudCover'],
+                                           windEmoji=emojis['windSpeed'],
+                                           windSpeed=current_weather[time]['windSpeed'],
+                                           accumulation=emojis[accumulation],
+                                           precipitation=current_weather[time]['precipitationProbability'])
+        weather_summary = ''.join([weather_summary, formatted_weather_item])
+    return weather_summary
+
+
 class WeatherParser:
     @classmethod
     def structured_weather_forecast(cls, weather_forecast):
@@ -99,3 +145,19 @@ class WeatherParser:
     @classmethod
     def print_weather_forecast_item(cls, user_id, weather_forecast_item, location=None):
         return _print_weather_forecast_item(user_id, weather_forecast_item, location)
+
+    @classmethod
+    def structured_current_weather(cls, current_weather):
+        return _structured_current_weather(current_weather)
+
+    @classmethod
+    def print_current_weather(cls, user_id, current_weather):
+        return _print_current_weather(user_id, current_weather)
+
+
+if __name__ == '__main__':
+    pass
+    # with open('../weather.json', 'r') as f:
+        # json.dump(WeatherParser.structured_current_weather(RedisDatabaseInterface.get_redis('395159496', 'current_weather')), f, indent=4)
+        # print(_print_current_weather(json.load(f)))
+    # print(WeatherParser.structured_current_weather(RedisDatabaseInterface.get_redis('395159496', 'weather')))
