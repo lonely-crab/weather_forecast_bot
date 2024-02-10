@@ -7,11 +7,12 @@ redis_db = redis.Redis(host='localhost', port=6379, db=0)
 
 
 def _set_redis(user_id: str, key: str, value: dict | str) -> None:
-    value = {key: value}
-    old_value = json.loads(redis_db.get(user_id))
-    old_value.update(value)
+    if redis_db.get(user_id) is not None:
+        old_value = json.loads(redis_db.get(user_id))
+        old_value.update(value)
+    else:
+        old_value = value
     new_value = json.dumps(old_value)
-    print(new_value)
     redis_db.set(user_id, new_value)
 
 
@@ -46,4 +47,3 @@ class RedisDatabaseInterface:
 # print(redis_db.get("395159496"))
 # _set_redis("395159496", "location", {"latitude": 0.0, "longitude": 0.0})
 # print(redis_db.get("395159496"))
-redis_db.delete("395159496")
