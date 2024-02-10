@@ -10,9 +10,6 @@ import json
 
 @bot.message_handler(commands=['weather_forecast'], state=MyStates.location)
 def handle_weather_forecast(message: Message) -> None:
-    if bot.get_state(message.from_user.id, message.chat.id) is not None:
-        bot.delete_state(message.from_user.id, message.chat.id)
-
     try:
         weather = GetWeatherInterface.get_weather(message.from_user.id)
         structured_weather = WeatherParser.structured_weather_forecast(weather)
@@ -26,7 +23,7 @@ def handle_weather_forecast(message: Message) -> None:
         bot.send_message(message.chat.id, str(error))
 
 
-@bot.message_handler(state=MyStates.forecast)
+@bot.message_handler(state=MyStates.forecast, regexp=r'\b\d{2}.\d{2}\b')
 def handle_forecast(message: Message) -> None:
     forecast_date = message.text
     if re.match(r'\b\d{2}.\d{2}\b', forecast_date):
