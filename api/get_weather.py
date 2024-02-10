@@ -7,7 +7,7 @@ import json
 def _get_weather(user_id, timesteps: str = "1d", units: str = "metric") -> dict:
     try:
         location = RedisDatabaseInterface.get_redis(user_id, "location")
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError("Location isn't set. Use /set_location command.")
     try:
         location_query = ','.join([str(location['latitude']), str(location['longitude'])])
