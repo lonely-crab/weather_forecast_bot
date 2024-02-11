@@ -26,7 +26,7 @@ DEFAULT_COMMANDS = [
     ('current_weather', 'Get hourly weather forecast at your location'),
     ('weather_forecast', 'Get weather forecast for the next 6 days at your location (including today)'),
     ('help', 'List of commands and their descriptions'),
-    ('custom', 'Custom weather forecast (try \\custom for more information)'),
+    ('custom_forecast', 'Custom weather forecast (timesteps, units and other weather parameters)'),
     ('history', 'History of requests')
 ]
 
