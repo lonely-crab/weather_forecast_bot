@@ -11,7 +11,6 @@ def _set_redis(user_id: str, key: str, value: dict | str) -> None:
     old_value = json.loads(redis_db.get(user_id))
     old_value.update(value)
     new_value = json.dumps(old_value)
-    print(new_value)
     redis_db.set(user_id, new_value)
 
 
@@ -20,9 +19,15 @@ def _get_redis(user_id: str, key: str) -> Any:
     return value
 
 
-def _delete_redis(user_id: str) -> None:
+def _delete_user(user_id: str) -> None:
     redis_db.delete(user_id)
 
+
+def _delete_redis(user_id: str, key: str) -> None:
+    value = json.loads(redis_db.get(user_id))
+    value.pop(key)
+    new_value = json.dumps(value)
+    redis_db.set(user_id, new_value)
 
 class RedisDatabaseInterface:
     @classmethod
@@ -38,8 +43,13 @@ class RedisDatabaseInterface:
         return _get_redis(user_id, key)
 
     @classmethod
-    def delete_redis(cls, user_id) -> None:
-        _delete_redis(user_id)
+    def delete_user(cls, user_id) -> None:
+        _delete_user(user_id)
+
+    @classmethod
+    def delete_redis(cls, user_id, key) -> None:
+        _delete_redis(user_id, key)
+
 
 # # print(_get_redis("395159496", "location"))
 # RedisDatabaseInterface.set_user("395159496")
