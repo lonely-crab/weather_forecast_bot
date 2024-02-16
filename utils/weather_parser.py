@@ -1,7 +1,4 @@
-import json
-import re
 from datetime import datetime
-from datetime import timezone
 from datetime import timedelta
 from database.redis_database import RedisDatabaseInterface
 from .conditions import Conditions
@@ -141,6 +138,63 @@ def _print_current_weather(user_id, current_weather: dict) -> str:
     return weather_summary
 
 
+def _hourly_custom_forecast(weather: dict, timedel):
+    weather_dict = {}
+    banned_keys = {'iceAccumulationLwe', 'rainAccumulationLwe', 'snowAccumulationLwe', 'sleetAccumulationLwe',
+                   'temperatureApparent', 'weatherCode'}
+    for hour in weather['timelines']['hourly']:
+        if timedel.startswith('-'):
+            timed = timedel[1:3]
+            time = datetime.fromisoformat(hour['time']) - timedelta(hours=int(timed))
+        else:
+            timed = timedel[1:3]
+            time = datetime.fromisoformat(hour['time']) + timedelta(hours=int(timed))
+        time = time.strftime("%H:%M")
+        if len(weather_dict) == 24:
+            break
+        if time in weather_dict:
+            continue
+        new_values = {key: val for key, val in hour['values'].items() if val is not None and key not in banned_keys}
+        weather_dict[time] = new_values
+    return weather_dict
+
+
+def _daily_custom_forecast(weather: dict):
+    weather_dict = {}
+    allowed_keys = {'cloudBaseAvg', 'cloudCeilingAvg', 'cloudCoverAvg', 'dewPointAvg', 'evapotranspirationAvg',
+                    'freezingRainIntensityAvg', 'humidityAvg', 'iceAccumulationAvg', 'moonriseTime',
+                    'precipitationProbabilityAvg', 'uvHealthConcernAvg',
+                    'pressureSurfaceLevelAvg', 'rainAccumulationAvg', 'rainIntensityAvg', 'sleetAccumulationAvg',
+                    'sleetIntensityAvg', 'snowAccumulationAvg', 'snowIntensityAvg', 'sunriseTime', 'sunsetTime',
+                    'temperatureAvg', 'temperatureMax', 'temperatureMin', 'uvIndexAvg', 'visibilityAvg',
+                    'windDirectionAvg', 'windSpeedAvg', 'windGustMax'}
+    for day in weather['timelines']['daily']:
+        formatted_date = datetime.fromisoformat(day['time']).strftime("%d.%m")
+        new_values = {key: value for key, value in day['values'].items() if value is not None and key in allowed_keys}
+        weather_dict[formatted_date] = new_values
+    return weather_dict
+
+
+def _custom_weather_parser(user_id,  timesteps: str, units: str):
+    timedel = RedisDatabaseInterface.get_redis(user_id, "timezone")
+    weather = RedisDatabaseInterface.get_redis(user_id, "weather")
+    if timesteps == '1h':
+        RedisDatabaseInterface.set_redis(user_id, "hourly", _hourly_custom_forecast(weather, timedel))
+    else:
+        RedisDatabaseInterface.set_redis(user_id, "daily", _daily_custom_forecast(weather))
+
+
+def _get_timely_callbacks(call) -> list:
+    timesteps = RedisDatabaseInterface.get_redis(call.from_user.id, 'timesteps')
+    timesteps_query = 'hourly' if timesteps == '1h' else 'daily'
+    forecast = RedisDatabaseInterface.get_redis(call.from_user.id, timesteps_query)
+    current_time = RedisDatabaseInterface.get_redis(call.from_user.id, "current_time")
+    times = list(forecast.keys())
+    time = times[current_time]
+    values = list(forecast[time].keys())
+    return values
+
+
 class WeatherParser:
     @classmethod
     def structured_weather_forecast(cls, weather_forecast):
@@ -161,6 +215,14 @@ class WeatherParser:
     @classmethod
     def print_current_weather(cls, user_id, current_weather):
         return _print_current_weather(user_id, current_weather)
+
+    @classmethod
+    def custom_weather_parser(cls, user_id, timesteps, units):
+        return _custom_weather_parser(user_id, timesteps, units)
+
+    @classmethod
+    def get_timely_callbacks(cls, call):
+        return _get_timely_callbacks(call)
 
 
 if __name__ == '__main__':
