@@ -15,6 +15,7 @@ def handle_location_1(message: Message) -> None:
                                      GetLocationInterface.get_location(message.from_user.id)["city"])
     bot.set_state(message.from_user.id, MyStates.location, message.chat.id)
     bot.send_message(message.chat.id, "Location saved!")
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
 
 
 @bot.message_handler(func=lambda message: not message.text.startswith('/'), regexp=r'\D+',
@@ -27,3 +28,4 @@ def handle_location_2(message: Message) -> None:
     RedisDatabaseInterface.set_redis(message.from_user.id, "city", city)
     bot.set_state(message.from_user.id, MyStates.location, message.chat.id)
     bot.send_message(message.chat.id, "Location saved!")
+    RedisDatabaseInterface.add_history(message.from_user.id, message)

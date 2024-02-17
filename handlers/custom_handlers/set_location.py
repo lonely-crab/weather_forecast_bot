@@ -1,7 +1,7 @@
 from loader import bot
 from telebot.types import Message
 from states.states import MyStates
-
+from database.redis_database import RedisDatabaseInterface
 
 @bot.message_handler(commands=['set_location'])
 def handle_set_location(message: Message) -> None:
@@ -25,3 +25,5 @@ def handle_set_location(message: Message) -> None:
     bot.send_message(message.chat.id, "For example:\nRussia\nSaint Petersburg")
 
     bot.set_state(message.from_user.id, MyStates.set_location, message.chat.id)
+
+    RedisDatabaseInterface.add_history(message.from_user.id, message)

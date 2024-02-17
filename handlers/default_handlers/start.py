@@ -27,3 +27,4 @@ def handle_start(message: Message) -> None:
     except IntegrityError:
         bot.reply_to(message, "Glad to see you again, {first_name}! Write /help"
                               " to get a list of commands and their descriptions.".format(first_name=first_name))
+    RedisDatabaseInterface.add_history(message.from_user.id, message)

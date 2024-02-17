@@ -20,11 +20,13 @@ def handle_custom_forecast(message: Message) -> None:
         'Timesteps: 1h', 'Timesteps: 1d'
     )
     bot.send_message(message.chat.id, 'Choose a timestep:', reply_markup=keyboard)
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
     bot.set_state(message.from_user.id, MyStates.timesteps, message.chat.id)
 
 
 @bot.message_handler(state="*", commands=['custom_forecast'])
 def handle_custom_forecast(message: Message) -> None:
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
     bot.send_message(message.chat.id, 'Your location is not set! Please, use /set_location command.')
 
 
@@ -36,6 +38,7 @@ def handle_timesteps(message: Message) -> None:
     bot.send_message(message.chat.id, 'Saved!')
     bot.send_message(message.chat.id, 'Choose a unit:', reply_markup=create_custom_forecast_keyboard('Metric',
                                                                                                      'Imperial'))
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
     bot.set_state(message.from_user.id, MyStates.units, message.chat.id)
 
 
@@ -58,6 +61,8 @@ def handle_units(message: Message) -> None:
     bot.send_message(message.from_user.id, 'Press this button to show {timesteps} forecast'
                                            ' in {units} units'.format(timesteps=timesteps_message, units=units_message),
                      reply_markup=keyboard)
+
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'Show forecast')

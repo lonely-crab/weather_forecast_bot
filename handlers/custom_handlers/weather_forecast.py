@@ -5,7 +5,6 @@ from utils.weather_parser import WeatherParser
 from states.states import MyStates
 from database.redis_database import RedisDatabaseInterface
 import re
-import json
 
 
 @bot.message_handler(commands=['weather_forecast'], state=MyStates.location)
@@ -21,6 +20,7 @@ def handle_weather_forecast(message: Message) -> None:
         bot.set_state(message.from_user.id, MyStates.forecast, message.chat.id)
     except ValueError as error:
         bot.send_message(message.chat.id, str(error))
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
 
 
 @bot.message_handler(state=MyStates.forecast, regexp=r'\b\d{2}.\d{2}\b')
@@ -39,3 +39,4 @@ def handle_forecast(message: Message) -> None:
     else:
         bot.send_message(message.chat.id, "Write a date from the list above to see detailed forecast.\n"
                                           "If you want to see other weather forecast, try another command")
+    RedisDatabaseInterface.add_history(message.from_user.id, message)

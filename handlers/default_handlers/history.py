@@ -1,18 +1,15 @@
 from loader import bot
-from states.states import MyStates
 from telebot.types import Message
 from database.redis_database import RedisDatabaseInterface
 import json
-from datetime import datetime
 
 
 @bot.message_handler(commands=['history'])
 def handle_history(message: Message) -> None:
-    bot.send_message(message.chat.id, message.date)
-    bot.send_message(message.chat.id, datetime.fromtimestamp(message.date))
-    bot.send_message(message.chat.id, 'History')
-    history = RedisDatabaseInterface.get_redis(message.from_user.id, 'history')
-    if history is None:
-        bot.send_message(message.chat.id, 'No history')
+    history = json.loads(RedisDatabaseInterface.get_redis(message.from_user.id, 'history'))
+    if len(history) == 1:
+        bot.send_message(message.chat.id, history)
     else:
-        bot.send_message(message.chat.id, json.dumps(history, indent=4))
+        history_str = '\n'.join(['History:', *history])
+        bot.send_message(message.chat.id, history_str)
+    RedisDatabaseInterface.add_history(message.from_user.id, message)
