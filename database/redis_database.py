@@ -1,7 +1,8 @@
 import redis
 from typing import Any
 import json
-
+from telebot.types import Message
+from datetime import datetime
 
 redis_db = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -29,6 +30,14 @@ def _delete_redis(user_id: str, key: str) -> None:
     new_value = json.dumps(value)
     redis_db.set(user_id, new_value)
 
+
+def _add_history(user_id: str, message: Message) -> None:
+    history = ' : '.join([str(datetime.fromtimestamp(message.date)), message.text])
+    old_history = json.loads(redis_db.get(user_id)).get('history', [])
+    old_history.append(history)
+    new_history = json.dumps(old_history)
+    redis_db.set(user_id, new_history)
+
 class RedisDatabaseInterface:
     @classmethod
     def set_user(cls, user_id) -> None:
@@ -50,6 +59,9 @@ class RedisDatabaseInterface:
     def delete_redis(cls, user_id, key) -> None:
         _delete_redis(user_id, key)
 
+    @classmethod
+    def add_history(cls, user_id, message) -> None:
+        _add_history(user_id, message)
 
 # # print(_get_redis("395159496", "location"))
 # RedisDatabaseInterface.set_user("395159496")
