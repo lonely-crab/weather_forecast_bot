@@ -4,37 +4,32 @@ from config_data.config import API_KEY_LOCATION, API_HOST_LOCATION
 from database.redis_database import RedisDatabaseInterface
 
 
-def _get_location(user_id, latitude, longitude) -> dict:
+def _get_location(latitude: float, longitude: float) -> dict[str, ...]:
     url = "https://{host}/v1/geocode/reverse".format(host=API_HOST_LOCATION)
 
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
-    params = {
-        "lat": latitude,
-        "lon": longitude,
-        "apiKey": API_KEY_LOCATION
-    }
+    params = {"lat": latitude, "lon": longitude, "apiKey": API_KEY_LOCATION}
 
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        return response.json()['features'][0]['properties']
+        return response.json()["features"][0]["properties"]
     else:
         raise ValueError("Couldn't get location from API.")
 
 
 class GetLocationInterface:
     @classmethod
-    def get_location(cls, user_id) -> dict:
+    def get_location(cls, user_id: str | int) -> dict:
         try:
-            return _get_location(user_id, **RedisDatabaseInterface.get_redis(user_id, "location"))
+            return _get_location(
+                **RedisDatabaseInterface.get_redis(user_id, "location")
+            )
         except ValueError as error:
             raise ValueError(str(error))
         except KeyError:
             raise ValueError("Location isn't set. Use /set_location command.")
 
 
-if __name__ == '__main__':
-    RedisDatabaseInterface.set_user(123)
-    RedisDatabaseInterface.set_redis(123, "location", {"latitude": 59.937500, "longitude": 30.308611})
-    # GetLocationInterface.get_location(123)
-    print(GetLocationInterface.get_location(123))
+if __name__ == "__main__":
+    pass
