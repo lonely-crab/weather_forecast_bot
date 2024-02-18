@@ -6,9 +6,10 @@ name = "pypi"
 [packages]
 requests = "==2.31.0"
 pyTelegramBotAPI = "==4.15.2"
+
 [dev-packages]
+black = "*"
 
 [requires]
 python_version = "3.11"
 python_full_version = "3.11.4"
-

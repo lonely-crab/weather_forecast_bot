@@ -4,15 +4,15 @@ import dotenv
 
 dotenv.load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN отсутствует в переменных окружения")
 
-API_KEY_LOCATION = os.getenv('API_KEY_LOCATION')
+API_KEY_LOCATION = os.getenv("API_KEY_LOCATION")
 if not API_KEY_LOCATION:
     raise ValueError("API_KEY_LOCATION отсутствует в переменных окружения")
 
-API_KEY_WEATHER = os.getenv('API_KEY_WEATHER')
+API_KEY_WEATHER = os.getenv("API_KEY_WEATHER")
 if not API_KEY_WEATHER:
     raise ValueError("API_KEY_WEATHER отсутствует в переменных окружения")
 
@@ -21,13 +21,17 @@ API_HOST_LOCATION = "api.geoapify.com"
 
 # поддерживаемые команды
 DEFAULT_COMMANDS = [
-    ('start', 'Start bot'),
-    ('set_location', 'Set your location to enable weather forecast'),
-    ('current_weather', 'Get hourly weather forecast at your location'),
-    ('weather_forecast', 'Get weather forecast for the next 6 days at your location (including today)'),
-    ('help', 'List of commands and their descriptions'),
-    ('custom_forecast', 'Custom weather forecast (timesteps, units and other weather parameters)'),
-    ('history', 'History of requests')
+    ("start", "Start bot"),
+    ("set_location", "Set your location to enable weather forecast"),
+    ("current_weather", "Get hourly weather forecast at your location"),
+    (
+        "weather_forecast",
+        "Get weather forecast for the next 6 days at your location (including today)",
+    ),
+    ("help", "List of commands and their descriptions"),
+    (
+        "custom_forecast",
+        "Custom weather forecast (timesteps, units and other weather parameters)",
+    ),
+    ("history", "History of requests"),
 ]
-
-
