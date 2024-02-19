@@ -42,7 +42,6 @@ class GetTimeZoneInterface:
                 user_id,
                 "timezone",
                 _get_time_zone(
-                    user_id,
                     **RedisDatabaseInterface.get_redis(user_id, "location")
                 ),
             )
