@@ -7,17 +7,26 @@ from utils.weather_parser import WeatherParser
 from database.redis_database import RedisDatabaseInterface
 
 
-@bot.message_handler(commands=['current_weather'], state=[MyStates.location, MyStates.forecast])
+@bot.message_handler(
+    commands=["current_weather"], state=[MyStates.location, MyStates.forecast]
+)
 def handle_current_weather(message: Message) -> None:
     try:
-        current_weather = GetWeatherInterface.get_weather(message.from_user.id, '1h')
+        current_weather = GetWeatherInterface.get_weather(
+            message.from_user.id, "1h"
+        )
         GetTimeZoneInterface.get_time_zone(message.from_user.id)
-        structured_current_weather = WeatherParser.structured_current_weather(message.from_user.id, current_weather)
+        structured_current_weather = WeatherParser.structured_current_weather(
+            message.from_user.id, current_weather
+        )
         print(structured_current_weather)
-        bot.send_message(message.chat.id, WeatherParser.print_current_weather(message.from_user.id,
-                                                                              structured_current_weather))
+        bot.send_message(
+            message.chat.id,
+            WeatherParser.print_current_weather(
+                message.from_user.id, structured_current_weather
+            ),
+        )
         RedisDatabaseInterface.add_history(message.from_user.id, message)
 
     except ValueError as error:
         bot.send_message(message.chat.id, str(error))
-
