@@ -36,8 +36,20 @@ def _delete_redis(user_id: str | int, key: str) -> None:
 
 
 def _add_history(user_id: str | int, message: Message) -> None:
-    message_text = message.text.join(["'", "'"])
-    message_text = re.sub(r"\n", " ", message_text)
+    try:
+        message_text = message.text.join(["'", "'"])
+        message_text = re.sub(r"\n", " ", message_text)
+    except AttributeError:
+        message_text = " ".join(
+            [
+                "lat:",
+                str(message.location.latitude),
+                ",",
+                "lon:",
+                str(message.location.longitude),
+            ]
+        )
+
     history = " : ".join(
         [str(datetime.fromtimestamp(message.date)), message_text]
     )
