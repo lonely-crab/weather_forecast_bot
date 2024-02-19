@@ -1,4 +1,8 @@
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telebot.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardRemove,
+)
 
 
 def create_custom_forecast_keyboard(*args) -> ReplyKeyboardMarkup:
@@ -13,4 +17,3 @@ def create_custom_forecast_keyboard(*args) -> ReplyKeyboardMarkup:
 def remove_keyboard() -> ReplyKeyboardRemove:
     keyboard = ReplyKeyboardRemove()
     return keyboard
-
