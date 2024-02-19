@@ -5,7 +5,7 @@ from peewee import IntegrityError
 from database.redis_database import RedisDatabaseInterface
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def handle_start(message: Message) -> None:
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
@@ -22,9 +22,17 @@ def handle_start(message: Message) -> None:
             first_name=first_name,
         )
         user.save()
-        bot.reply_to(message, "Welcome! I'm bot for weather forecast."
-                              " Type /help for a list of commands and their descriptions.")
+        bot.reply_to(
+            message,
+            "Welcome! I'm bot for weather forecast."
+            " Type /help for a list of commands and their descriptions.",
+        )
     except IntegrityError:
-        bot.reply_to(message, "Glad to see you again, {first_name}! Write /help"
-                              " to get a list of commands and their descriptions.".format(first_name=first_name))
+        bot.reply_to(
+            message,
+            "Glad to see you again, {first_name}! Write /help"
+            " to get a list of commands and their descriptions.".format(
+                first_name=first_name
+            ),
+        )
     RedisDatabaseInterface.add_history(message.from_user.id, message)
