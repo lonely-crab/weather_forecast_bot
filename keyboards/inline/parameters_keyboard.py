@@ -5,6 +5,13 @@ PREV = InlineKeyboardButton(text="Previous", callback_data="prev")
 
 
 def create_custom_inline_keyboard(*args) -> InlineKeyboardMarkup:
+    """
+    Create custom inline keyboard.
+    :param args:
+    :type args: list | set
+    :return:
+    :rtype: InlineKeyboardMarkup
+    """
     keyboard = InlineKeyboardMarkup()
     try:
         for i in range(0, len(args), 2):

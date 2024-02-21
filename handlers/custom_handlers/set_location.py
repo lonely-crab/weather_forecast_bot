@@ -6,6 +6,13 @@ from database.redis_database import RedisDatabaseInterface
 
 @bot.message_handler(commands=["set_location"])
 def handle_set_location(message: Message) -> None:
+    """
+    Handle /set_location command.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
 

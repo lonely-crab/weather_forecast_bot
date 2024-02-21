@@ -7,6 +7,13 @@ from api.get_loc_from_coord import GetLocationInterface
 
 @bot.message_handler(content_types=["location"], state=MyStates.set_location)
 def handle_location_1(message: Message) -> None:
+    """
+    Handle location when the state is set.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
     RedisDatabaseInterface.set_redis(
@@ -34,6 +41,13 @@ def handle_location_1(message: Message) -> None:
     state=MyStates.set_location,
 )
 def handle_location_2(message: Message) -> None:
+    """
+    Handle location when the state is not set.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
     country, city = message.text.split("\n")

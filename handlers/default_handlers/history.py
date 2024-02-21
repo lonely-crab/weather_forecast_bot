@@ -6,6 +6,13 @@ import json
 
 @bot.message_handler(commands=["history"])
 def handle_history(message: Message) -> None:
+    """
+    Handle /history command.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     history = json.loads(
         RedisDatabaseInterface.get_redis(message.from_user.id, "history")
     )

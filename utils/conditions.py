@@ -1,4 +1,11 @@
 def _choose_emoji(current_weather: dict) -> dict:
+    """
+    Choose emoji according to weather conditions.
+    :param current_weather:
+    :type current_weather: dict
+    :return:
+    :rtype: dict
+    """
     keys = [
         "cloudCover",
         "windSpeed",
@@ -76,4 +83,11 @@ def _choose_emoji(current_weather: dict) -> dict:
 class Conditions:
     @classmethod
     def choose_emoji(cls, current_weather: dict) -> dict:
+        """
+        Choose emoji according to weather conditions.
+        :param current_weather:
+        :type current_weather: dict
+        :return:
+        :rtype: dict
+        """
         return _choose_emoji(current_weather)

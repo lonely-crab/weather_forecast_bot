@@ -11,6 +11,13 @@ from database.redis_database import RedisDatabaseInterface
     commands=["current_weather"], state=[MyStates.location, MyStates.forecast]
 )
 def handle_current_weather(message: Message) -> None:
+    """
+    Handle /current_weather command
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     try:
         current_weather = GetWeatherInterface.get_weather(
             message.from_user.id, "1h"

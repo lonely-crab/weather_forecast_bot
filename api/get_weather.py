@@ -6,6 +6,17 @@ from database.redis_database import RedisDatabaseInterface
 def _get_weather(
     user_id: str | int, timesteps: str = "1d", units: str = "metric"
 ) -> dict:
+    """
+    Get weather from API.
+    :param user_id:
+    :type user_id: str | int
+    :param timesteps:
+    :type timesteps: str
+    :param units:
+    :type units: str
+    :return: weather dictionary
+    :rtype: dict
+    """
     try:
         location: dict = RedisDatabaseInterface.get_redis(user_id, "location")
     except (KeyError, TypeError):
@@ -45,10 +56,25 @@ def _get_weather(
 
 
 class GetWeatherInterface:
+    """
+    Class for getting weather from API.
+    """
+
     @classmethod
     def get_weather(
         cls, user_id: str | int, timesteps: str = "1d", units: str = "metric"
     ) -> dict[str, list[dict[str, ...]]] | None:
+        """
+        Get weather from API.
+        :param user_id:
+        :type user_id: str | int
+        :param timesteps:
+        :type timesteps: str
+        :param units:
+        :type units: str
+        :return: weather dictionary
+        :rtype: dict
+        """
         try:
             if not _get_weather(user_id, timesteps, units):
                 raise ValueError(

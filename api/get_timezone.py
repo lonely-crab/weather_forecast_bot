@@ -10,6 +10,19 @@ def _get_time_zone(
     city: str = None,
     country: str = None,
 ) -> dict[str, ...]:
+    """
+    Get timezone from coordinates.
+    :param latitude:
+    :type latitude: float
+    :param longitude:
+    :type longitude: float
+    :param city:
+    :type city: str
+    :param country:
+    :type country: str
+    :return:
+    :rtype: dict
+    """
     if latitude and longitude:
         params = {
             "lat": latitude,
@@ -35,8 +48,17 @@ def _get_time_zone(
 
 
 class GetTimeZoneInterface:
+    """
+    Class for getting timezone from coordinates.
+    """
+
     @classmethod
     def get_time_zone(cls, user_id: str | int) -> None:
+        """
+        Get timezone from coordinates.
+        :param user_id:
+        :type user_id: str | int
+        """
         try:
             RedisDatabaseInterface.set_redis(
                 user_id,

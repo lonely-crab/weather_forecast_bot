@@ -1,5 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
+
+from telebot.types import CallbackQuery
+
 from database.redis_database import RedisDatabaseInterface
 from .conditions import Conditions
 
@@ -16,6 +19,13 @@ _weather_emojis = {
 
 
 def _structured_weather_forecast(weather_forecast: dict) -> dict:
+    """
+    Parse weather for daily forecast.
+    :param weather_forecast:
+    :type weather_forecast: dict
+    :return:
+    :rtype: dict
+    """
     weather_dict = {}
     keys = [
         "temperatureMax",
@@ -36,7 +46,18 @@ def _structured_weather_forecast(weather_forecast: dict) -> dict:
     return weather_dict
 
 
-def _structured_current_weather(user_id, current_weather: dict) -> dict:
+def _structured_current_weather(
+    user_id: int | str, current_weather: dict
+) -> dict:
+    """
+    Parse current weather for hourly forecast.
+    :param user_id:
+    :type user_id: int | str
+    :param current_weather:
+    :type current_weather: dict
+    :return:
+    :rtype: dict
+    """
     keys = [
         "temperature",
         "cloudCover",
@@ -69,8 +90,20 @@ def _structured_current_weather(user_id, current_weather: dict) -> dict:
 
 
 def _print_weather_forecast_item(
-    user_id, weather_forecast_item: tuple, location: str | None = None
+    user_id: int | str,
+    weather_forecast_item: tuple,
+    location: str | None = None,
 ) -> str:
+    """
+    Print weather forecast item for daily forecast.
+    :param user_id:
+    :type user_id: int | str
+    :param weather_forecast_item:
+    :type weather_forecast_item: tuple
+    :param location:
+    :type location: str | None
+    :return:
+    """
     if location is None:
         location = RedisDatabaseInterface.get_redis(user_id, "city")
     if location is None:
@@ -114,7 +147,16 @@ def _print_weather_forecast_item(
     return formatted_summary
 
 
-def _print_weather_forecast(user_id, weather_forecast: dict) -> str:
+def _print_weather_forecast(user_id: int | str, weather_forecast: dict) -> str:
+    """
+    Print weather forecast for daily forecast.
+    :param user_id:
+    :type user_id: int | str
+    :param weather_forecast:
+    :type weather_forecast: dict
+    :return:
+    :rtype: str
+    """
     weather_list = list(weather_forecast.items())
     weather_summary = [_print_weather_forecast_item(user_id, weather_list[0])]
     short_summary = (
@@ -138,7 +180,16 @@ def _print_weather_forecast(user_id, weather_forecast: dict) -> str:
     return "\n".join(weather_summary)
 
 
-def _print_current_weather(user_id, current_weather: dict) -> str:
+def _print_current_weather(user_id: int | str, current_weather: dict) -> str:
+    """
+    Print current weather.
+    :param user_id:
+    :type user_id: int | str
+    :param current_weather:
+    :type current_weather: dict
+    :return:
+    :rtype: str
+    """
     keys = [
         "temperature",
         "cloudCover",
@@ -179,7 +230,16 @@ def _print_current_weather(user_id, current_weather: dict) -> str:
     return weather_summary
 
 
-def _hourly_custom_forecast(weather: dict, timedel):
+def _hourly_custom_forecast(weather: dict, timedel: str) -> dict:
+    """
+    Parse hourly forecast.
+    :param weather:
+    :type weather: dict
+    :param timedel:
+    :type timedel: str
+    :return:
+    :rtype: dict
+    """
     weather_dict = {}
     banned_keys = {
         "iceAccumulationLwe",
@@ -214,7 +274,14 @@ def _hourly_custom_forecast(weather: dict, timedel):
     return weather_dict
 
 
-def _daily_custom_forecast(weather: dict):
+def _daily_custom_forecast(weather: dict) -> dict:
+    """
+    Parse daily forecast.
+    :param weather:
+    :type weather: dict
+    :return:
+    :rtype: dict
+    """
     weather_dict = {}
     allowed_keys = {
         "cloudBaseAvg",
@@ -257,7 +324,20 @@ def _daily_custom_forecast(weather: dict):
     return weather_dict
 
 
-def _custom_weather_parser(user_id, timesteps: str, units: str):
+def _custom_weather_parser(
+    user_id: int | str, timesteps: str, units: str
+) -> None:
+    """
+    Choose custom weather parser based on timesteps.
+    :param user_id:
+    :type user_id: int | str
+    :param timesteps:
+    :type timesteps: str
+    :param units:
+    :type units: str
+    :return:
+    :rtype: None
+    """
     timedel = RedisDatabaseInterface.get_redis(user_id, "timezone")
     weather = RedisDatabaseInterface.get_redis(user_id, "weather")
     if timesteps == "1h":
@@ -270,7 +350,14 @@ def _custom_weather_parser(user_id, timesteps: str, units: str):
         )
 
 
-def _get_timely_callbacks(call) -> list:
+def _get_timely_callbacks(call: CallbackQuery) -> list:
+    """
+    Get values for buttons about weather.
+    :param call:
+    :type call: CallbackQuery
+    :return:
+    :rtype: list
+    """
     timesteps = RedisDatabaseInterface.get_redis(
         call.from_user.id, "timesteps"
     )
@@ -289,35 +376,106 @@ def _get_timely_callbacks(call) -> list:
 
 class WeatherParser:
     @classmethod
-    def structured_weather_forecast(cls, weather_forecast):
+    def structured_weather_forecast(cls, weather_forecast: dict):
+        """
+        Parse weather for daily forecast.
+        :param weather_forecast:
+        :type weather_forecast: dict
+        :return:
+        :rtype: dict
+        """
         return _structured_weather_forecast(weather_forecast)
 
     @classmethod
-    def print_weather_forecast(cls, user_id, weather_forecast):
+    def print_weather_forecast(
+        cls, user_id: int | str, weather_forecast: dict
+    ):
+        """
+        Print weather forecast for daily forecast.
+        :param user_id:
+        :type user_id: int | str
+        :param weather_forecast:
+        :type weather_forecast: dict
+        :return:
+        :rtype: str
+        """
         return _print_weather_forecast(user_id, weather_forecast)
 
     @classmethod
     def print_weather_forecast_item(
-        cls, user_id, weather_forecast_item, location=None
+        cls,
+        user_id: int | str,
+        weather_forecast_item: tuple,
+        location: str = None,
     ):
+        """
+        Print weather forecast item for daily forecast.
+        :param user_id:
+        :type user_id: int | str
+        :param weather_forecast_item:
+        :type weather_forecast_item: tuple
+        :param location:
+        :type location: str | None
+        :return:
+        """
         return _print_weather_forecast_item(
             user_id, weather_forecast_item, location
         )
 
     @classmethod
-    def structured_current_weather(cls, user_id, current_weather):
+    def structured_current_weather(
+        cls, user_id: int | str, current_weather: dict
+    ):
+        """
+        Parse current weather for hourly forecast.
+        :param user_id:
+        :type user_id: int | str
+        :param current_weather:
+        :type current_weather: dict
+        :return:
+        :rtype: dict
+        """
         return _structured_current_weather(user_id, current_weather)
 
     @classmethod
-    def print_current_weather(cls, user_id, current_weather):
+    def print_current_weather(cls, user_id: int | str, current_weather: dict):
+        """
+        Print current weather.
+        :param user_id:
+        :type user_id: int | str
+        :param current_weather:
+        :type current_weather: dict
+        :return:
+        :rtype: str
+        """
         return _print_current_weather(user_id, current_weather)
 
     @classmethod
-    def custom_weather_parser(cls, user_id, timesteps, units):
+    def custom_weather_parser(
+        cls, user_id: int | str, timesteps: str, units: str
+    ):
+        """
+        Choose custom weather parser based on timesteps.
+        :param user_id:
+        :type user_id: int | str
+        :param timesteps:
+        :type timesteps: str
+        :param units:
+        :type units: str
+        :return:
+        :rtype: None
+        """
         return _custom_weather_parser(user_id, timesteps, units)
 
     @classmethod
-    def get_timely_callbacks(cls, call):
+    def get_timely_callbacks(cls, call: CallbackQuery):
+        """
+        Get values for buttons about weather.
+        :param call:
+        :type call: CallbackQuery
+        :return:
+        :rtype: list
+        """
         return _get_timely_callbacks(call)
 
 

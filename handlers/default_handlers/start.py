@@ -7,6 +7,13 @@ from database.redis_database import RedisDatabaseInterface
 
 @bot.message_handler(commands=["start"])
 def handle_start(message: Message) -> None:
+    """
+    Handle /start command.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     if bot.get_state(message.from_user.id, message.chat.id) is not None:
         bot.delete_state(message.from_user.id, message.chat.id)
     user_id = message.from_user.id

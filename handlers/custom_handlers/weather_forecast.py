@@ -9,6 +9,13 @@ import re
 
 @bot.message_handler(commands=["weather_forecast"], state=MyStates.location)
 def handle_weather_forecast(message: Message) -> None:
+    """
+    Handle /weather_forecast command.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     try:
         weather = GetWeatherInterface.get_weather(message.from_user.id)
         structured_weather = WeatherParser.structured_weather_forecast(weather)
@@ -35,6 +42,13 @@ def handle_weather_forecast(message: Message) -> None:
 
 @bot.message_handler(state=MyStates.forecast, regexp=r"\b\d{2}.\d{2}\b")
 def handle_forecast(message: Message) -> None:
+    """
+    Handle dates from the list to get detailed weather forecast.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     forecast_date = message.text
     if re.match(r"\b\d{2}.\d{2}\b", forecast_date):
         try:

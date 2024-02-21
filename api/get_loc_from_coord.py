@@ -5,6 +5,17 @@ from database.redis_database import RedisDatabaseInterface
 
 
 def _get_location(latitude: float, longitude: float) -> dict[str, ...]:
+    """
+    Get location from coordinates.
+    :param latitude: latitude
+    :type latitude: float
+    :param longitude: longitude
+    :type longitude: float
+    :return: location
+    :raise: ValueError
+    :rtype: dict
+
+    """
     url = "https://{host}/v1/geocode/reverse".format(host=API_HOST_LOCATION)
 
     headers = CaseInsensitiveDict()
@@ -19,8 +30,19 @@ def _get_location(latitude: float, longitude: float) -> dict[str, ...]:
 
 
 class GetLocationInterface:
+    """
+    Class for getting location from coordinates.
+    """
+
     @classmethod
     def get_location(cls, user_id: str | int) -> dict:
+        """
+        Get location from coordinates.
+        :param user_id:
+        :type user_id: str | int
+        :return: location
+        :rtype: dict
+        """
         try:
             return _get_location(
                 **RedisDatabaseInterface.get_redis(user_id, "location")

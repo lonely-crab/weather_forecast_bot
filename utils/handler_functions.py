@@ -9,6 +9,13 @@ from telebot.types import InlineKeyboardMarkup
 
 
 def next_prev_preprocessor(call: CallbackQuery) -> dict[str, dict]:
+    """
+    Preprocessor for next and previous buttons.
+    :param call:
+    :type call: CallbackQuery
+    :return:
+    :rtype: dict
+    """
     timesteps = RedisDatabaseInterface.get_redis(
         call.from_user.id, "timesteps"
     )
@@ -22,6 +29,17 @@ def next_prev_preprocessor(call: CallbackQuery) -> dict[str, dict]:
 def next_prev_postprocessor(
     call: CallbackQuery, forecast: dict, step: int = 0
 ) -> tuple[InlineKeyboardMarkup, str]:
+    """
+    Postprocessor for next and previous buttons.
+    :param call:
+    :type call: CallbackQuery
+    :param forecast:
+    :type forecast: dict
+    :param step:
+    :type step: int
+    :return:
+    :rtype: tuple
+    """
     times = list(forecast.keys())
     current_time = RedisDatabaseInterface.get_redis(
         call.from_user.id, "current_time"

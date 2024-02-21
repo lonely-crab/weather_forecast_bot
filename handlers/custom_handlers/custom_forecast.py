@@ -1,6 +1,6 @@
 from telebot.apihelper import ApiTelegramException
 from loader import bot
-from telebot.types import Message
+from telebot.types import Message, CallbackQuery
 from states.states import MyStates
 from api.get_weather import GetWeatherInterface
 from api.get_timezone import GetTimeZoneInterface
@@ -25,6 +25,13 @@ from utils.handler_functions import (
     commands=["custom_forecast"], state=[MyStates.location, MyStates.forecast]
 )
 def handle_custom_forecast(message: Message) -> None:
+    """
+    Handle /custom_forecast command if the state is set.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     try:
         RedisDatabaseInterface.delete_redis(message.from_user.id, "message_id")
     except Exception as e:
@@ -41,6 +48,11 @@ def handle_custom_forecast(message: Message) -> None:
 
 @bot.message_handler(state="*", commands=["custom_forecast"])
 def handle_custom_forecast(message: Message) -> None:
+    """
+    Handle /custom_forecast command if the state is not set.
+    :param message:
+    :return:
+    """
     RedisDatabaseInterface.add_history(message.from_user.id, message)
     bot.send_message(
         message.chat.id,
@@ -52,6 +64,13 @@ def handle_custom_forecast(message: Message) -> None:
     state=MyStates.timesteps, regexp=r"\bTimesteps: 1h\b|\bTimesteps: 1d\b"
 )
 def handle_timesteps(message: Message) -> None:
+    """
+    Handle timesteps message.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     timesteps = message.text[-2:]
     RedisDatabaseInterface.set_redis(
         message.from_user.id, "timesteps", timesteps
@@ -68,6 +87,13 @@ def handle_timesteps(message: Message) -> None:
 
 @bot.message_handler(state=MyStates.units, regexp=r"\bMetric\b|\bImperial\b")
 def handle_units(message: Message) -> None:
+    """
+    Handle units message.
+    :param message:
+    :type message: Message
+    :return:
+    :rtype: None
+    """
     units = message.text.lower()
     units_message = "metric" if units == "metric" else "imperial"
     RedisDatabaseInterface.set_redis(message.from_user.id, "units", units)
@@ -99,7 +125,14 @@ def handle_units(message: Message) -> None:
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "Show forecast")
-def handle_next_prev(call) -> None:
+def handle_next_prev(call: CallbackQuery) -> None:
+    """
+    Handle next and previous buttons.
+    :param call:
+    :type call: CallbackQuery
+    :return:
+    :rtype: None
+    """
     bot.edit_message_text(
         "Loading...", call.message.chat.id, call.message.message_id
     )
@@ -112,7 +145,14 @@ def handle_next_prev(call) -> None:
 
 
 @bot.callback_query_handler(func=lambda call: call.data == NEXT.callback_data)
-def handle_next(call) -> None:
+def handle_next(call: CallbackQuery) -> None:
+    """
+    Handle next button.
+    :param call:
+    :type call: CallbackQuery
+    :return:
+    :rtype: None
+    """
     message = call.message
     forecast = next_prev_preprocessor(call)
     keyboard, time = next_prev_postprocessor(call, forecast, 1)
@@ -125,7 +165,14 @@ def handle_next(call) -> None:
 
 
 @bot.callback_query_handler(func=lambda call: call.data == PREV.callback_data)
-def handle_prev(call) -> None:
+def handle_prev(call: CallbackQuery) -> None:
+    """
+    Handle previous button.
+    :param call:
+    :type call: CallbackQuery
+    :return:
+    :rtype: None
+    """
     message = call.message
     forecast = next_prev_preprocessor(call)
     keyboard, time = next_prev_postprocessor(call, forecast, -1)
@@ -141,6 +188,13 @@ def handle_prev(call) -> None:
     func=lambda call: call.data in WeatherParser.get_timely_callbacks(call)
 )
 def handle_timely_forecast(call) -> None:
+    """
+    Handle button for forecast of certain timestep.
+    :param call:
+    :type call: CallbackQuery
+    :return:
+    :rtype: None
+    """
     current_time = RedisDatabaseInterface.get_redis(
         call.from_user.id, "current_time"
     )
